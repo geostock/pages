@@ -1,3 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoStock FAQs & Troubleshooting Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <!-- Rendered markdown will appear here -->
+    </div>
+
+    <script>
+        const markdownContent = `
 # GeoStock FAQs & Troubleshooting Guide
 
 ## Quick Links
@@ -11,7 +51,7 @@
 ### Display Issues
 1. **Inventory Not Showing**
    - Check if the snippet is installed
-   - Verify snippet position in `product-template.liquid`
+   - Verify snippet position in \`product-template.liquid\`
    - Clear browser cache and reload
 
 2. **Wrong Inventory Count**
@@ -38,12 +78,12 @@
    - Verify display
 
 2. **Custom Position**
-   ```html
+   \`\`\`html
    <div id="inventoryLocationInformation">
      <span class="inventoryLocationLoading"></span>
    </div>
-   ```
-   - Add to `product-template.liquid`
+   \`\`\`
+   - Add to \`product-template.liquid\`
    - Place below product price
    - Save theme changes
 
@@ -62,3 +102,10 @@
 - Email: geostock@proton.me
 - Response Time: 24-48 hours
 - [Documentation](https://jtc-interactive.gitbook.io/inventory-app)
+        `;
+
+        const converter = new showdown.Converter();
+        document.getElementById('content').innerHTML = converter.makeHtml(markdownContent);
+    </script>
+</body>
+</html>
