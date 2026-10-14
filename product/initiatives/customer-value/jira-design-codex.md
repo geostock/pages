@@ -10,7 +10,7 @@
 - Shared filter: `Dashboard 2.0` (shared with all GeoStock project roles).
 - Kanban board: [`Dashboard 2.0`](https://otpcloud.atlassian.net/jira/people/712020:fff16753-01fa-4a7d-b9f8-beb87c56569d/boards/135), backed by that filter.
 - GitHub remains the source for engineering execution, implementation issues and pull requests.
-- No new Jira code ticket duplicates `pages#2`, `pages#4`, `frontend#103` or `backend#68`; reconciliation is tracked in [GEOS-20](https://otpcloud.atlassian.net/browse/GEOS-20).
+- No new Jira code ticket duplicates `pages#2`, `pages#4`, `frontend#97` or `backend#68`; reconciliation is tracked in [GEOS-20](https://otpcloud.atlassian.net/browse/GEOS-20).
 - Existing reliability work [GEOS-10](https://otpcloud.atlassian.net/browse/GEOS-10) and [GEOS-13](https://otpcloud.atlassian.net/browse/GEOS-13) are Epic children. Completed PostHog context [GEOS-11](https://otpcloud.atlassian.net/browse/GEOS-11) is related work. `GEOS-16` is intentionally excluded unless email alerts are approved.
 
 ## Active Jira fields
