@@ -26,7 +26,7 @@ Existing GitHub issues describe an early value dashboard, but no current PRD con
 
 - GitHub product issue: https://github.com/geostock/pages/issues/2
 - GitHub build issue: https://github.com/geostock/pages/issues/4
-- GitHub instrumentation issue: https://github.com/geostock/frontend/issues/103
+- GitHub instrumentation issue (single owner record; frontend#103 and pages#3 closed as duplicates on 2026-10-14): https://github.com/geostock/frontend/issues/97
 - Jira initiative Epic: https://otpcloud.atlassian.net/browse/GEOS-18
 
 ## Approval sequence
