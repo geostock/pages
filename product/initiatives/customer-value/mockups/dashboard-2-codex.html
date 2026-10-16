@@ -288,6 +288,10 @@
     .status-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; color: var(--muted); font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: .04em; }
     .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 8px; background: #f8e6b8; color: #6d4c0c; font-size: 11px; font-weight: 650; text-transform: none; letter-spacing: 0; }
     .status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #b98900; }
+    .status-badge[data-tone="healthy"] { background: #eaf4f1; color: #366456; }
+    .status-badge[data-tone="healthy"]::before { background: #008060; }
+    .status-badge[data-tone="neutral"] { background: #ededed; color: #4a4a4a; }
+    .status-badge[data-tone="neutral"]::before { background: #616161; }
     .status-card h2 { font-size: 20px; margin-bottom: 5px; }
     .status-summary { max-width: 690px; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .primary-button { border: 1px solid #005bd3; border-radius: 8px; background: #005bd3; color: #fff; padding: 8px 14px; font-size: 13px; font-weight: 650; box-shadow: 0 1px 0 rgba(0,0,0,.1); white-space: nowrap; }
@@ -340,6 +344,20 @@
     .proof-step { padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #f7f7f7; }
     .proof-step strong { display: block; font-size: 16px; }
     .proof-step span { color: var(--muted); font-size: 10px; }
+    .definition { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; background: #f7f7f7; }
+    .definition summary { padding: 10px 12px; cursor: pointer; font-size: 12px; font-weight: 650; }
+    .definition-body { padding: 0 12px 12px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .definition-body .secondary-button { margin-top: 8px; }
+    .diagnostics-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-bottom: 10px; color: var(--muted); font-size: 11px; }
+    .diagnostics-meta .secondary-button { margin-left: auto; }
+    .empty-state { padding: 24px; margin-bottom: 16px; text-align: center; }
+    .empty-state h2 { margin-bottom: 6px; }
+    .empty-state p { max-width: 620px; margin: 0 auto; color: var(--muted); line-height: 1.5; }
+    dialog { width: min(560px, calc(100% - 32px)); border: 0; border-radius: 12px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,.24); }
+    dialog::backdrop { background: rgba(0,0,0,.38); }
+    .dialog-body { padding: 20px; }
+    .dialog-body p { color: var(--muted); line-height: 1.55; }
+    .dialog-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
 
     @media (max-width: 640px) {
       .status-row { grid-template-columns: 1fr; gap: 14px; }
@@ -360,6 +378,7 @@
       .coverage-number { grid-column: 1 / -1; grid-row: 3; text-align: left; }
       .coverage-status { grid-column: 2; grid-row: 1; }
       .proof-grid { grid-template-columns: 1fr 1fr; }
+      .diagnostics-meta .secondary-button { margin-left: 0; }
       .history-chart-wrap { grid-template-columns: 34px 1fr; }
       .history-dates { margin-left: 42px; }
       .method { text-align: left; }
@@ -384,7 +403,7 @@
     <main class="main">
       <header class="topbar">
         <div><div class="eyebrow">Availability reliability</div><h1>Availability you can trust</h1><div class="subhead">Know when location inventory is current, where it is not, and what to fix first.</div></div>
-        <div class="controls"><select class="period" id="period" aria-label="Reporting period"><option>Right now</option><option>Last 7 days</option><option>Last 30 days</option></select><button class="page-button" id="refreshButton">Refresh</button></div>
+        <div class="controls"><select class="period" id="state" aria-label="Preview dashboard state"><option value="incident">Incident</option><option value="healthy">Healthy</option><option value="partial">Partial data</option><option value="missing">No data</option><option value="instrumentation">Measurement unavailable</option><option value="firstUse">First use</option><option value="recovered">Recovered</option></select><select class="period" id="period" aria-label="Reporting period"><option>Right now</option><option>Last 7 days</option><option>Last 30 days</option></select><button class="page-button" id="refreshButton">Refresh</button></div>
       </header>
 
       <aside class="banner preview-banner" aria-label="Preview status">
@@ -396,66 +415,122 @@
       <section class="card status-card" aria-label="Current availability status">
         <div class="status-row">
           <div>
-            <div class="status-kicker">Current status <span class="status-badge">Needs attention</span></div>
-            <h2>1 location needs attention</h2>
-            <div class="status-summary">74 variants at Downtown may show old stock. Its last successful inventory update was 38 minutes ago.</div>
+            <div class="status-kicker">Current status <span class="status-badge" id="statusBadge" data-tone="warning">Needs attention</span></div>
+            <h2 id="statusTitle">1 location needs attention</h2>
+            <div class="status-summary" id="statusSummary">74 variants at Downtown may show old stock. Its last successful verified update was 38 minutes ago. Owner: GeoStock. Example data refreshed 4 minutes ago.</div>
           </div>
-          <button class="primary-button" id="reviewAffectedButton">Review affected products</button>
+          <button class="primary-button detail-button" id="reviewAffectedButton" data-dialog-title="74 affected variants at Downtown" data-dialog-copy="Owner: GeoStock. Latest verified update: 38 minutes ago. These variants may show old availability while GeoStock restores the update path.">Review affected products</button>
         </div>
       </section>
 
+      <section class="card empty-state" id="stateExplanation" hidden aria-live="polite"><h2 id="stateExplanationTitle"></h2><p id="stateExplanationCopy"></p></section>
+
+      <div id="dashboardContent">
       <div class="card workspace">
       <section class="workspace-section" aria-labelledby="next-issues-title">
         <div class="section-heading"><div><h2 id="next-issues-title">Next issues</h2><div class="panel-sub">After the Downtown issue, these are the remaining actions.</div></div></div>
         <div class="action-list">
-          <article class="action-row"><span class="action-symbol"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v12H5.2L4 17.2V4Zm3 4h10M7 12h6"/></svg></span><div><div class="action-title">South warehouse is not receiving stock updates</div><div class="action-meta">Detected 12 minutes ago · GeoStock is reconnecting it <span class="owner">Owner: GeoStock</span></div></div><button class="secondary-button">View status</button></article>
-          <article class="action-row"><span class="action-symbol neutral"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><div class="action-title">2 imported locations need matching</div><div class="action-meta">Imported 1 hour ago · Match them before publishing availability <span class="owner">Owner: Merchant</span></div></div><button class="secondary-button">Match locations</button></article>
+          <article class="action-row"><span class="action-symbol"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v12H5.2L4 17.2V4Zm3 4h10M7 12h6"/></svg></span><div><div class="action-title">South warehouse is not receiving stock updates</div><div class="action-meta">Detected 12 minutes ago · 31 eligible products affected · GeoStock is reconnecting it <span class="owner">Owner: GeoStock</span></div></div><button class="secondary-button detail-button" data-dialog-title="South warehouse update path" data-dialog-copy="31 eligible products are affected. GeoStock owns recovery; no merchant repair is required.">View status</button></article>
+          <article class="action-row"><span class="action-symbol neutral"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><div class="action-title">2 imported locations need matching</div><div class="action-meta">Imported 1 hour ago · 18 eligible products blocked from publishing <span class="owner">Owner: Merchant</span></div></div><button class="secondary-button detail-button" data-dialog-title="Match 2 imported locations" data-dialog-copy="Owner: Merchant. Match the imported locations before publishing availability for 18 eligible products.">Match locations</button></article>
         </div>
       </section>
 
       <section class="workspace-section" aria-labelledby="coverage-title">
-        <div class="section-heading"><div><h2 id="coverage-title">Coverage</h2><div class="panel-sub">Where GeoStock can currently keep location promises accurate.</div></div></div>
+        <div class="section-heading"><div><h2 id="coverage-title">Coverage</h2><div class="panel-sub">Where GeoStock can verify the complete availability update path.</div></div></div>
         <div class="coverage-list">
           <div class="coverage-item"><div><div class="coverage-name">Locations receiving stock updates</div><div class="coverage-desc">One location needs attention</div></div><div class="track"><span class="fill amber" style="width:92%"></span></div><span class="coverage-status warning">Needs attention</span><div class="coverage-number">11 of 12</div></div>
-          <div class="coverage-item"><div><div class="coverage-name">Products showing current stock</div><div class="coverage-desc">Current within the configured 15-minute target</div></div><div class="track"><span class="fill" style="width:98%"></span></div><span class="coverage-status">Healthy</span><div class="coverage-number">4,747 of 4,854</div></div>
-          <div class="coverage-item"><div><div class="coverage-name">Purchase protection active</div><div class="coverage-desc">Stops purchases when the shopper's location has no stock</div></div><div class="track"><span class="fill soft" style="width:83%"></span></div><span class="coverage-status warning">Needs attention</span><div class="coverage-number">10 of 12</div></div>
+          <div class="coverage-item"><div><div class="coverage-name">Product-location pairs verified current</div><div class="coverage-desc">Complete update path and storefront check passed; example window only</div></div><div class="track"><span class="fill" style="width:98%"></span></div><span class="coverage-status">Verified</span><div class="coverage-number">4,747 of 4,854</div></div>
+          <div class="coverage-item"><div><div class="coverage-name">Purchase protection verified active</div><div class="coverage-desc">Configuration and storefront behavior check passed</div></div><div class="track"><span class="fill soft" style="width:83%"></span></div><span class="coverage-status warning">Needs attention</span><div class="coverage-number">10 of 12</div></div>
         </div>
+        <details class="definition"><summary>How coverage is calculated</summary><div class="definition-body">Example definition v0.1. Eligible scope: enabled location-product pairs published by GeoStock. Excluded: test shops, staging shops, disabled locations, and disabled products. Example data refreshed 4 minutes ago. Eligibility changes must be versioned.<br /><button class="secondary-button detail-button" data-dialog-title="Excluded preview scope" data-dialog-copy="Example exclusions: test and staging shops, one disabled location, and 46 disabled products. Production must expose exact exclusions for the authenticated shop.">View excluded scope</button></div></details>
       </section>
 
       <section class="workspace-section" aria-labelledby="history-title">
-        <div class="section-heading"><div><h2 id="history-title">Reliability history</h2><div class="panel-sub">Percentage of monitored products showing current location stock.</div></div></div>
-        <div class="history-summary"><strong>97.8%</strong><span>now · below the 99% target</span></div>
+        <div class="section-heading"><div><h2 id="history-title">Reliability history</h2><div class="panel-sub">Percentage of eligible product-location pairs verified across the complete update path.</div></div></div>
+        <div class="history-summary"><strong>97.8%</strong><span>now · below the example 99% target · target not approved</span></div>
         <div class="history-chart-wrap">
           <div class="y-axis"><span>100%</span><span>99%</span><span>98%</span><span>97%</span></div>
-          <div class="history-chart" aria-label="Availability reliability over the last 30 days, currently 97.8 percent against a 99 percent target">
-            <span class="threshold-label">99% target</span><span class="incident-pin"></span><span class="incident-label">Update interruption</span>
+          <div class="history-chart" role="img" aria-label="Example availability reliability over the last 30 days, currently 97.8 percent against an unapproved 99 percent example target">
+            <span class="threshold-label">Example 99% target</span><span class="incident-pin"></span><span class="incident-label">Update interruption</span>
             <svg viewBox="0 0 700 190" preserveAspectRatio="none"><path d="M0 70 C70 55,105 64,150 50 S235 46,285 62 S370 52,420 44 S470 124,515 118 S590 92,630 86 S675 78,700 74" fill="none" stroke="#008060" stroke-width="4" stroke-linecap="round"/><path d="M0 63 H700" fill="none" stroke="#8a6116" stroke-width="2" stroke-dasharray="6 6"/></svg>
           </div>
         </div>
         <div class="history-dates"><span>Sep 15</span><span>Sep 22</span><span>Sep 29</span><span>Oct 6</span><span>Oct 13</span></div>
-        <div class="history-note">Availability was below target for 2 hours 14 minutes during the last 30 days.</div>
+        <div class="history-note">Example: verified availability was below the unapproved target for 2 hours 14 minutes during the last 30 days. Recovered incident retained in history.</div>
+      </section>
+
+      <section class="workspace-section" aria-labelledby="alerts-title">
+        <div class="section-heading"><div><h2 id="alerts-title">Proactive alerts</h2><div class="panel-sub">Confirmed problems, recovery, setup gaps, and weekly reliability.</div></div></div>
+        <div class="action-list">
+          <article class="action-row"><span class="action-symbol"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/></svg></span><div><div class="action-title">Availability may be out of date at Downtown</div><div class="action-meta">Confirmed across two checks · In-app now; email only if sustained <span class="owner">Owner: GeoStock</span></div></div><button class="secondary-button detail-button" data-dialog-title="Downtown alert" data-dialog-copy="Confirmed across two checks. Duplicate alerts remain suppressed while this incident is open.">View status</button></article>
+          <article class="action-row"><span class="action-symbol neutral"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><div><div class="action-title">South warehouse is connected again</div><div class="action-meta">Recovery message closes the prior incident <span class="owner">Owner: GeoStock</span></div></div><button class="secondary-button detail-button" data-dialog-title="Recovery confirmed" data-dialog-copy="The required consecutive successful checks passed. The incident remains visible in reliability history.">View recovery</button></article>
+          <article class="action-row"><span class="action-symbol neutral"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 12h8"/></svg></span><div><div class="action-title">Finish matching 2 imported locations</div><div class="action-meta">Merchant action required after onboarding grace period <span class="owner">Owner: Merchant</span></div></div><button class="secondary-button detail-button" data-dialog-title="Setup gap" data-dialog-copy="Owner: Merchant. One action: match the two imported locations.">Complete setup</button></article>
+          <article class="action-row"><span class="action-symbol neutral"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 19V5h16v14H4Zm3-3 3-4 3 2 4-6"/></svg></span><div><div class="action-title">Weekly reliability report ready</div><div class="action-meta">Generated only when reporting telemetry is complete <span class="owner">Included in Base</span></div></div><button class="secondary-button detail-button" data-dialog-title="Weekly reliability" data-dialog-copy="Base includes current health, core coverage, incident alerts, and seven-day history. Plus may add advanced history, exports, and custom thresholds.">View report</button></article>
+        </div>
       </section>
       </div>
 
       <details class="card diagnostics">
-        <summary>How GeoStock verifies stock</summary>
-        <div class="diagnostics-body"><div class="diagnostics-copy">Technical detail for troubleshooting. Merchants do not need this to understand current status.</div><div class="proof-grid"><div class="proof-step"><strong>14,206</strong><span>Shopify updates received</span></div><div class="proof-step"><strong>14,180</strong><span>Updates processed</span></div><div class="proof-step"><strong>14,165</strong><span>Changes published</span></div><div class="proof-step"><strong>14,151</strong><span>Storefront checks passed</span></div></div></div>
+        <summary>How GeoStock verifies availability delivery</summary>
+        <div class="diagnostics-body"><div class="diagnostics-copy">Technical detail for troubleshooting. Merchants do not need this to understand current status.</div><div class="diagnostics-meta"><span>Example incident GS-1042</span><span>Failure stage: storefront verification</span><span>Last failure: 12:42 PM</span><button class="secondary-button" id="copyDiagnosticButton">Copy diagnostic details</button></div><div class="proof-grid"><div class="proof-step"><strong>14,206</strong><span>Shopify updates received · 12:44 PM</span></div><div class="proof-step"><strong>14,180</strong><span>Updates processed · 12:44 PM</span></div><div class="proof-step"><strong>14,165</strong><span>Changes published · 12:43 PM</span></div><div class="proof-step"><strong>14,151</strong><span>Storefront checks passed · 12:42 PM</span></div></div></div>
       </details>
       <div class="method">Preview data only. Production requires live update status, freshness timestamps, and storefront verification. <button id="methodButton">View measurement requirements</button></div>
+      </div>
     </main>
   </div>
   <div class="toast" id="toast" role="status"></div>
+  <dialog id="detailDialog"><div class="dialog-body"><h2 id="dialogTitle"></h2><p id="dialogCopy"></p><div class="dialog-actions"><button class="secondary-button" id="closeDialogButton">Close</button></div></div></dialog>
   <script>
     const toast = document.getElementById("toast");
+    const detailDialog = document.getElementById("detailDialog");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusTitle = document.getElementById("statusTitle");
+    const statusSummary = document.getElementById("statusSummary");
+    const primaryAction = document.getElementById("reviewAffectedButton");
+    const dashboardContent = document.getElementById("dashboardContent");
+    const stateExplanation = document.getElementById("stateExplanation");
+    const stateViews = {
+      incident: ["Needs attention", "1 location needs attention", "74 variants at Downtown may show old stock. Its last successful verified update was 38 minutes ago. Owner: GeoStock. Example data refreshed 4 minutes ago.", true, "warning", "Review affected products", "74 affected variants at Downtown"],
+      healthy: ["Healthy", "Availability delivery is healthy", "All eligible paths passed their latest storefront verification. Example data refreshed 4 minutes ago.", false, "healthy", "View coverage", "Verified coverage"],
+      partial: ["Partial data", "Some availability could not be measured", "Storefront verification is missing for part of the eligible scope. No healthy score is shown.", false, "neutral", "View missing coverage", "Missing verification coverage"],
+      missing: ["No data", "Not enough data yet", "GeoStock needs complete telemetry before showing availability health.", false, "neutral", "", ""],
+      instrumentation: ["Unavailable", "Measurement unavailable", "GeoStock cannot verify availability health because monitoring failed. Store status is not reported as healthy or zero.", false, "neutral", "", ""],
+      firstUse: ["Setup", "Complete setup to start verification", "Connect at least one eligible location and enable storefront availability. Owner: Merchant.", false, "neutral", "Complete setup", "Complete availability setup"],
+      recovered: ["Recovered", "Availability delivery recovered", "Required consecutive checks passed. The incident remains visible in reliability history. Owner: GeoStock.", true, "healthy", "View recovery", "Recovered incident"]
+    };
     function showToast(message) { toast.textContent = message; toast.classList.add("show"); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => toast.classList.remove("show"), 1900); }
+    function openDetail(title, copy) { document.getElementById("dialogTitle").textContent = title; document.getElementById("dialogCopy").textContent = copy; detailDialog.showModal(); }
+    document.getElementById("state").addEventListener("change", (event) => {
+      const [badge, title, copy, showDetails, tone, actionLabel, actionTitle] = stateViews[event.target.value];
+      statusBadge.textContent = badge;
+      statusBadge.dataset.tone = tone;
+      statusTitle.textContent = title;
+      statusSummary.textContent = copy;
+      primaryAction.hidden = !actionLabel;
+      primaryAction.textContent = actionLabel;
+      primaryAction.dataset.dialogTitle = actionTitle;
+      primaryAction.dataset.dialogCopy = copy;
+      dashboardContent.hidden = !showDetails;
+      stateExplanation.hidden = showDetails;
+      document.getElementById("stateExplanationTitle").textContent = title;
+      document.getElementById("stateExplanationCopy").textContent = copy;
+    });
     document.getElementById("period").addEventListener("change", (event) => showToast(`Showing ${event.target.value.toLowerCase()}`));
     document.getElementById("refreshButton").addEventListener("click", () => showToast("Availability status refreshed"));
-    document.getElementById("requirementsButton").addEventListener("click", () => showToast("Measurement requirements opened"));
-    document.getElementById("reviewAffectedButton").addEventListener("click", () => showToast("Affected products opened"));
+    document.getElementById("requirementsButton").addEventListener("click", () => openDetail("Release requirements", "Live update status, timestamps, end-to-end processing results, storefront verification, approved eligibility rules, and baseline-backed targets are required before release."));
     document.querySelectorAll(".nav-item").forEach((button) => button.addEventListener("click", () => { document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); button.classList.add("active"); showToast(`${button.dataset.section} section selected`); }));
     document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => { document.querySelectorAll(".tab").forEach(item => item.classList.remove("active")); button.classList.add("active"); const incidents = button.dataset.view === "incidents"; document.getElementById("linePath").setAttribute("d", incidents ? "M0 192 C70 180,90 169,140 176 S230 160,280 142 S375 154,420 128 S520 137,560 103 S650 92,700 71" : "M0 184 C70 170,80 147,140 154 S235 137,280 117 S380 139,420 98 S515 105,560 67 S650 51,700 25"); showToast(`${button.textContent} view selected`); }));
-    document.querySelectorAll(".alert-action, .all-link, .secondary-button").forEach(button => button.addEventListener("click", () => showToast("Availability details opened")));
-    document.getElementById("methodButton").addEventListener("click", () => showToast("Requires webhook status, last successful update, import outcomes, and storefront verification"));
+    document.querySelectorAll(".detail-button").forEach(button => button.addEventListener("click", () => openDetail(button.dataset.dialogTitle, button.dataset.dialogCopy)));
+    document.getElementById("methodButton").addEventListener("click", () => openDetail("Measurement requirements", "Verified current requires receipt, processing, publishing, and storefront-check evidence for the eligible scope. Freshness alone does not prove inventory accuracy."));
+    document.getElementById("closeDialogButton").addEventListener("click", () => detailDialog.close());
+    document.getElementById("copyDiagnosticButton").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText("Example incident GS-1042 | failure stage: storefront verification | last failure: 12:42 PM");
+        showToast("Diagnostic details copied");
+      } catch {
+        showToast("Copy unavailable in this preview");
+      }
+    });
   </script>
 </body>
 </html>

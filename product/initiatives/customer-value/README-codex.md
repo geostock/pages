@@ -24,6 +24,8 @@ Existing GitHub issues describe an early value dashboard, but no current PRD con
 
 ## Dashboard mockups
 
+**Design status:** Draft. Requirements review is in progress; these files do not represent implementation approval.
+
 - [Interactive HTML](mockups/dashboard-2-codex.html)
 - [Desktop review render](mockups/dashboard-2-desktop-codex.png)
 - [Mobile review render](mockups/dashboard-2-mobile-codex.png)
