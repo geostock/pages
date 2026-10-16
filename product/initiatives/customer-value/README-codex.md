@@ -22,6 +22,14 @@ Existing GitHub issues describe an early value dashboard, but no current PRD con
 | [Jira delivery design](jira-design-codex.md) | GEOS Epic, filter-backed Kanban board, operating fields and work packages | Implemented; board quick filters pending Jira capability |
 | [GitHub Project design](github-project-design-codex.md) | Earlier cross-repository tracker proposal | Superseded by Jira delivery design |
 
+## Dashboard mockups
+
+- [Interactive HTML](mockups/dashboard-2-codex.html)
+- [Desktop review render](mockups/dashboard-2-desktop-codex.png)
+- [Mobile review render](mockups/dashboard-2-mobile-codex.png)
+
+Mockup values are illustrative. They are not live merchant results or approved metric targets.
+
 ## Current source links
 
 - GitHub product issue: https://github.com/geostock/pages/issues/2
