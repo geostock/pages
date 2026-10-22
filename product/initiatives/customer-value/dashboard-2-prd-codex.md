@@ -1,6 +1,6 @@
 # GeoStock Dashboard 2.0 PRD
 
-**Status:** Draft<br>
+**Status:** Draft — merchant validation and metric-source audit open<br>
 **Owner:** Product<br>
 **Target users:** Existing GeoStock merchants operating more than one inventory location<br>
 **Product promise:** Availability you can trust
@@ -128,6 +128,14 @@ Core reliability and incident visibility cannot be withheld from Base.
 
 ## 6. Success framework
 
+### Product approval gate
+
+Product approves the build only when:
+
+- Merchant validation reaches the `proceed` rule in `merchant-validation-codex.md`.
+- Engineering classifies every proposed metric as ready, partial or unavailable in [geostock/pages#10](https://github.com/geostock/pages/issues/10).
+- Product removes, relabels or defers every metric whose source cannot support the merchant-facing claim.
+
 ### Launch gates
 
 - Metrics reconcile within 5% of their authoritative source for three test shops.
@@ -157,6 +165,8 @@ Targets require baselines before approval.
 
 ## 7. Dependencies
 
+- Metric-source and tenant-isolation audit: [geostock/pages#10](https://github.com/geostock/pages/issues/10), assigned to Arunava.
+- Storefront event stream: [geostock/frontend#97](https://github.com/geostock/frontend/issues/97).
 - Live webhook and subscription health telemetry.
 - Processing and publish outcome records.
 - Storefront verification or an explicitly labeled weaker substitute.

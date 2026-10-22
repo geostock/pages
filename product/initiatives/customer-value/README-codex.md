@@ -17,6 +17,7 @@ Existing GitHub issues describe an early value dashboard, but no current PRD con
 | [Alert policy](alert-policy-codex.md) | Trigger, message, owner, channel, CTA and recovery | Draft |
 | [User stories](user-stories-codex.md) | Merchant and operator behavior with acceptance criteria | Draft |
 | [Rollout and experiment plan](rollout-plan-codex.md) | Phases, release gates, success measures and rollback rules | Draft |
+| [Merchant validation](merchant-validation-codex.md) | Three-customer interview script, scorecard and product decision rule | Ready to run |
 | [Evidence register](evidence-register-codex.md) | Verified facts, reported evidence, assumptions and unknowns | Draft |
 | [Decision log](decision-log-codex.md) | Durable product decisions and unresolved decisions | Draft |
 | [Jira delivery design](jira-design-codex.md) | GEOS Epic, filter-backed Kanban board, operating fields and work packages | Implemented; board quick filters pending Jira capability |
@@ -36,13 +37,14 @@ Mockup values are illustrative. They are not live merchant results or approved m
 
 - GitHub product issue: https://github.com/geostock/pages/issues/2
 - GitHub build issue: https://github.com/geostock/pages/issues/4
-- GitHub instrumentation issue: https://github.com/geostock/frontend/issues/103
+- GitHub metric-source audit: https://github.com/geostock/pages/issues/10
+- GitHub instrumentation issue: https://github.com/geostock/frontend/issues/97
 - Jira initiative Epic: https://otpcloud.atlassian.net/browse/GEOS-18
 
 ## Approval sequence
 
-1. PM approves the PRD and evidence boundaries.
-2. Engineering confirms telemetry feasibility and source ownership.
-3. Design confirms empty, partial-data, incident and recovered states.
+1. Product tests the mockup with three existing merchants.
+2. PM approves the PRD and evidence boundaries using the test findings.
+3. Engineering confirms telemetry feasibility and source ownership.
 4. Analytics establishes baselines before targets are approved.
-5. PM reconciles the existing GitHub issues before creating any new implementation issue.
+5. PM makes the build, revise or stop decision.
