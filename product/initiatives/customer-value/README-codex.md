@@ -44,6 +44,8 @@ Mockup values are illustrative. They are not live merchant results or approved m
 
 1. PM approves the PRD and evidence boundaries.
 2. Engineering confirms telemetry feasibility and source ownership.
-3. Analytics establishes baselines before targets are approved.
-4. PM makes the build, revise or stop decision.
-5. Product revisits merchant validation after the source audit defines a supportable V1.
+3. Design confirms empty, partial-data, incident and recovered states.
+4. Analytics establishes baselines before targets are approved.
+5. PM makes the build, revise or stop decision.
+
+Merchant validation is deferred until the source audit defines a supportable V1 or merchant beta planning begins.
