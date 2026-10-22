@@ -135,7 +135,7 @@ Product approves the build only when:
 - Engineering classifies every proposed metric as ready, partial or unavailable in [geostock/pages#10](https://github.com/geostock/pages/issues/10).
 - Product removes, relabels or defers every metric whose source cannot support the merchant-facing claim.
 
-Merchant interviews are deferred. They remain useful for later usability and value validation but do not block the current source audit or product-definition work.
+Merchant interviews are deferred. Revisit them after the source audit defines a supportable V1 or before merchant beta. They do not block current product-definition work.
 
 ### Launch gates
 

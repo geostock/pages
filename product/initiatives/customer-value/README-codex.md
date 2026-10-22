@@ -17,7 +17,6 @@ Existing GitHub issues describe an early value dashboard, but no current PRD con
 | [Alert policy](alert-policy-codex.md) | Trigger, message, owner, channel, CTA and recovery | Draft |
 | [User stories](user-stories-codex.md) | Merchant and operator behavior with acceptance criteria | Draft |
 | [Rollout and experiment plan](rollout-plan-codex.md) | Phases, release gates, success measures and rollback rules | Draft |
-| [Merchant validation](merchant-validation-codex.md) | Three-customer interview script, scorecard and product decision rule | Deferred |
 | [Evidence register](evidence-register-codex.md) | Verified facts, reported evidence, assumptions and unknowns | Draft |
 | [Decision log](decision-log-codex.md) | Durable product decisions and unresolved decisions | Draft |
 | [Jira delivery design](jira-design-codex.md) | GEOS Epic, filter-backed Kanban board, operating fields and work packages | Implemented; board quick filters pending Jira capability |
@@ -47,4 +46,4 @@ Mockup values are illustrative. They are not live merchant results or approved m
 2. Engineering confirms telemetry feasibility and source ownership.
 3. Analytics establishes baselines before targets are approved.
 4. PM makes the build, revise or stop decision.
-5. Product runs merchant validation later when prioritised.
+5. Product revisits merchant validation after the source audit defines a supportable V1.
