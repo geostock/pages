@@ -1,6 +1,6 @@
 # GeoStock Dashboard 2.0 PRD
 
-**Status:** Draft — merchant validation and metric-source audit open<br>
+**Status:** Draft — metric-source audit open; merchant validation deferred<br>
 **Owner:** Product<br>
 **Target users:** Existing GeoStock merchants operating more than one inventory location<br>
 **Product promise:** Availability you can trust
@@ -132,9 +132,10 @@ Core reliability and incident visibility cannot be withheld from Base.
 
 Product approves the build only when:
 
-- Merchant validation reaches the `proceed` rule in `merchant-validation-codex.md`.
 - Engineering classifies every proposed metric as ready, partial or unavailable in [geostock/pages#10](https://github.com/geostock/pages/issues/10).
 - Product removes, relabels or defers every metric whose source cannot support the merchant-facing claim.
+
+Merchant interviews are deferred. They remain useful for later usability and value validation but do not block the current source audit or product-definition work.
 
 ### Launch gates
 

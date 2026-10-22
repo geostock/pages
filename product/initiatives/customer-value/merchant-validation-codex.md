@@ -1,7 +1,7 @@
 # Dashboard 2.0 merchant validation
 
 **Owner:** Product  
-**Status:** Ready to run  
+**Status:** Deferred by Product on 2026-10-22<br>
 **Participants:** 3 existing multi-location GeoStock merchants  
 **Session length:** 25 minutes each
 
