@@ -12,6 +12,7 @@
 | D-006 | Freshness alone cannot be labeled accuracy | A recent timestamp does not prove storefront output or correct inventory | End-to-end verification supports a stronger claim |
 | D-007 | Targets remain unapproved before baselines | The proposed 15-minute and 99% values lack verified baseline and tolerance evidence | Baseline and service-objective review is complete |
 | D-008 | Jira is the Dashboard 2.0 initiative record; GitHub remains the code-execution record | GEOS now has an Epic and initiative tickets while existing repository issues and pull requests remain the engineering source of truth | The team explicitly approves a different initiative system |
+| D-009 | Defer merchant interviews; use the source audit for the next scope decision | Product needs to know which claims current data can support before testing a concrete V1 | Source audit defines a supportable V1 or merchant beta planning begins |
 
 ## Pending decisions
 

@@ -36,7 +36,8 @@ Mockup values are illustrative. They are not live merchant results or approved m
 
 - GitHub product issue: https://github.com/geostock/pages/issues/2
 - GitHub build issue: https://github.com/geostock/pages/issues/4
-- GitHub instrumentation issue: https://github.com/geostock/frontend/issues/103
+- GitHub metric-source audit: https://github.com/geostock/pages/issues/10
+- GitHub instrumentation issue: https://github.com/geostock/frontend/issues/97
 - Jira initiative Epic: https://otpcloud.atlassian.net/browse/GEOS-18
 
 ## Approval sequence
@@ -45,4 +46,6 @@ Mockup values are illustrative. They are not live merchant results or approved m
 2. Engineering confirms telemetry feasibility and source ownership.
 3. Design confirms empty, partial-data, incident and recovered states.
 4. Analytics establishes baselines before targets are approved.
-5. PM reconciles the existing GitHub issues before creating any new implementation issue.
+5. PM makes the build, revise or stop decision.
+
+Merchant validation is deferred until the source audit defines a supportable V1 or merchant beta planning begins.

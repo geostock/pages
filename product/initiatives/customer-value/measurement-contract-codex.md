@@ -1,6 +1,6 @@
 # Dashboard 2.0 measurement contract
 
-**Status:** Draft. Thresholds and targets are not approved until baselines exist.
+**Status:** Draft. Engineering source audit is tracked in [geostock/pages#10](https://github.com/geostock/pages/issues/10). Thresholds and targets are not approved until baselines exist.
 
 ## Contract
 
