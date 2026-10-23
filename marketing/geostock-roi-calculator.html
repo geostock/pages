@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoStock ROI Calculator</title>
+<style>
+  :root {
+    --g-bg: #ffffff;
+    --g-card: #f6f8f7;
+    --g-border: #e2e8e5;
+    --g-text: #1a2b23;
+    --g-dim: #5c6f66;
+    --g-accent: #0e8a5f;
+    --g-accent-soft: #e3f3ec;
+    --g-danger: #c0392b;
+    --g-warn: #b7791f;
+    --g-radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .gs-roi {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--g-bg); color: var(--g-text);
+    max-width: 720px; margin: 0 auto; padding: 1.5rem;
+    line-height: 1.55; font-size: 15px;
+  }
+  .gs-roi h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .gs-roi .sub { color: var(--g-dim); font-size: 0.85rem; margin-bottom: 1.25rem; }
+  .gs-card {
+    background: var(--g-card); border: 1px solid var(--g-border);
+    border-radius: var(--g-radius); padding: 1.15rem 1.25rem; margin-bottom: 1rem;
+  }
+  .gs-card h3 {
+    font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--g-dim); margin-bottom: 0.85rem;
+  }
+  .gs-row { margin-bottom: 1rem; }
+  .gs-row:last-child { margin-bottom: 0; }
+  .gs-row label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.35rem; }
+  .gs-row label .val { color: var(--g-accent); font-variant-numeric: tabular-nums; }
+  .gs-row input[type="range"] { width: 100%; accent-color: var(--g-accent); }
+  .gs-presets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+  .gs-presets button {
+    font-size: 0.72rem; padding: 0.28rem 0.7rem; border-radius: 999px;
+    border: 1px solid var(--g-border); background: #fff; color: var(--g-dim);
+    cursor: pointer;
+  }
+  .gs-presets button:hover { border-color: var(--g-accent); color: var(--g-accent); }
+  .gs-num {
+    width: 100%; font-size: 1rem; padding: 0.5rem 0.7rem;
+    border: 1px solid var(--g-border); border-radius: 8px; background: #fff;
+    color: var(--g-text); font-variant-numeric: tabular-nums;
+  }
+  .gs-big {
+    text-align: center; background: var(--g-accent-soft);
+    border: 1px solid rgba(14,138,95,0.25);
+  }
+  .gs-big .amount { font-size: 2.1rem; font-weight: 800; color: var(--g-accent); font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .gs-big .cap { font-size: 0.78rem; color: var(--g-dim); margin-top: 0.2rem; }
+  .gs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  @media (max-width: 560px) { .gs-grid { grid-template-columns: 1fr; } }
+  .gs-tier {
+    background: #fff; border: 1px solid var(--g-border); border-radius: 10px;
+    padding: 0.8rem; text-align: center;
+  }
+  .gs-tier.best { border-color: var(--g-accent); box-shadow: 0 0 0 1px var(--g-accent); position: relative; }
+  .gs-tier .tag {
+    position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+    background: var(--g-accent); color: #fff; font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.07em; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap;
+  }
+  .gs-tier .name { font-size: 0.78rem; font-weight: 700; }
+  .gs-tier .price { font-size: 0.72rem; color: var(--g-dim); margin: 0.1rem 0 0.35rem; }
+  .gs-tier .roi { font-size: 1.25rem; font-weight: 800; color: var(--g-accent); font-variant-numeric: tabular-nums; }
+  .gs-tier .roi-cap { font-size: 0.66rem; color: var(--g-dim); }
+  .gs-fail { color: var(--g-danger); }
+  .gs-note { font-size: 0.68rem; color: var(--g-dim); margin-top: 0.9rem; line-height: 1.5; }
+  .gs-note strong { color: var(--g-text); }
+</style>
+</head>
+<body>
+<div class="gs-roi" id="gs-roi">
+
+  <h2>What are stock mistakes costing you?</h2>
+  <p class="sub">Every oversold order costs <strong>$47.30</strong> — the refund is only 5% of it. See what accurate per-location stock pays back.</p>
+
+  <div class="gs-card">
+    <h3>Your store</h3>
+    <div class="gs-row">
+      <label for="orders">Orders per month</label>
+      <input class="gs-num" type="number" id="orders" value="500" min="1" max="500000" step="10">
+    </div>
+    <div class="gs-row">
+      <label>Stock-related cancellations — <span class="val" id="rateVal">2.0%</span> of orders</label>
+      <input type="range" id="rate" min="0.1" max="10" step="0.1" value="2">
+      <div class="gs-presets">
+        <button data-rate="4.2">Manual sync · ~4%</button>
+        <button data-rate="2.0">15-min sync · ~2%</button>
+        <button data-rate="0.2">Real-time · ~0.2%</button>
+      </div>
+    </div>
+    <div class="gs-row">
+      <label>Cancellations GeoStock prevents — <span class="val" id="prevVal">30%</span> <span style="font-weight:400;color:var(--g-dim)">(conservative)</span></label>
+      <input type="range" id="prev" min="10" max="90" step="5" value="30">
+    </div>
+  </div>
+
+  <div class="gs-card gs-big">
+    <div class="amount" id="savedYear">$0</div>
+    <div class="cap">estimated recovered per year with GeoStock<br>
+      <span id="savedMo" style="font-variant-numeric:tabular-nums;"></span>
+    </div>
+  </div>
+
+  <div class="gs-card">
+    <h3>Return on each GeoStock plan</h3>
+    <div class="gs-grid">
+      <div class="gs-tier">
+        <div class="name">Starter</div>
+        <div class="price">$6.99/mo</div>
+        <div class="roi" id="roi1">–</div>
+        <div class="roi-cap">annual ROI</div>
+      </div>
+      <div class="gs-tier best">
+        <div class="tag">MOST POPULAR</div>
+        <div class="name">Growth</div>
+        <div class="price">$14.99/mo</div>
+        <div class="roi" id="roi2">–</div>
+        <div class="roi-cap">annual ROI</div>
+      </div>
+      <div class="gs-tier">
+        <div class="name">Pro</div>
+        <div class="price">$39.99/mo</div>
+        <div class="roi" id="roi3">–</div>
+        <div class="roi-cap">annual ROI</div>
+      </div>
+    </div>
+    <p class="gs-note" style="margin-top:0.8rem;" id="beLine"></p>
+  </div>
+
+  <p class="gs-note">
+    <strong>Sources:</strong> true cost of $47.30 per oversold order (refund ≈ 5%; burned acquisition cost $18.70; review risk, marketplace penalties, restocking labor, wasted shipping) — Nventory analysis of 10,000 oversell cancellations across 83 sellers, Mar 2025–Jan 2026, via MerchantPulse market brief, Sep 2026. Total cost exceeds $100 per event when lost lifetime value is included ($56–80). Cancellation-rate presets reflect sync-latency benchmarks from the same study. Adjust the sliders to match your store.
+  </p>
+
+</div>
+
+<script>
+(function () {
+  var COST = 47.30;
+  var el = function (id) { return document.getElementById(id); };
+  var fmt = function (n) {
+    return '$' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+  var tiers = [
+    { price: 6.99,  out: 'roi1' },
+    { price: 14.99, out: 'roi2' },
+    { price: 39.99, out: 'roi3' }
+  ];
+  function calc() {
+    var orders = Math.max(0, parseFloat(el('orders').value) || 0);
+    var rate   = parseFloat(el('rate').value) / 100;
+    var prev   = parseFloat(el('prev').value) / 100;
+    el('rateVal').textContent = (rate * 100).toFixed(1) + '%';
+    el('prevVal').textContent = Math.round(prev * 100) + '%';
+
+    var cancMo  = orders * rate;
+    var savedMo = cancMo * COST * prev;
+    var savedYr = savedMo * 12;
+
+    el('savedYear').textContent = fmt(savedYr) + ' / year';
+    el('savedMo').textContent = fmt(savedMo) + ' per month · ' +
+      (cancMo * prev).toFixed(1) + ' cancellations prevented monthly';
+
+    tiers.forEach(function (t) {
+      var annual = t.price * 12;
+      var roi = annual > 0 ? savedYr / annual : 0;
+      var node = el(t.out);
+      node.textContent = roi >= 100 ? Math.round(roi) + '×' : roi.toFixed(1) + '×';
+      node.className = 'roi' + (roi < 1 ? ' gs-fail' : '');
+    });
+
+    var growthAnnual = 14.99 * 12;
+    if (savedYr > 0) {
+      var months = growthAnnual / savedMo;
+      el('beLine').innerHTML = 'Growth pays for itself if it prevents <strong>one cancellation every ' +
+        (months >= 12 ? (months / 12).toFixed(1) + ' months' : Math.max(1, Math.round(months * 4.33)) + ' weeks') +
+        '</strong>.';
+    } else {
+      el('beLine').textContent = '';
+    }
+  }
+  ['orders', 'rate', 'prev'].forEach(function (id) {
+    el(id).addEventListener('input', calc);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.gs-presets button'), function (b) {
+    b.addEventListener('click', function () {
+      el('rate').value = b.getAttribute('data-rate');
+      calc();
+    });
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
